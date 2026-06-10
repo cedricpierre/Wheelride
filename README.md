@@ -1,104 +1,49 @@
-# 🏍️ WheelRide
+# WheelRide
 
-**Ride together. Stay connected.**
+Ride together. Stay connected.
 
-WheelRide is a lightweight mobile app designed for motorcycle group rides.
+WheelRide is a lightweight Flutter app for motorcycle group rides: create a ride, invite riders with a QR code, share live locations, and chat in real time.
 
-Create a ride in seconds, invite riders with a QR code, track everyone in real time, and chat with the group while on the road.
+## MVP
 
-No route planning.
-No social network.
-No complicated setup.
+- Email/password authentication and password reset through Supabase Auth.
+- Create rides with name, optional description, unique join code, and QR invite.
+- Join rides by QR scan or manual code.
+- Live location sharing on an OpenStreetMap/MapTiler `flutter_map` view.
+- Real-time text chat with no historical fetch.
+- Participants list with online state and owner badge.
 
-Just create a ride, join, and ride.
+## Configuration
 
----
+The app runs in local demo mode when Supabase credentials are not provided. To connect a backend:
 
-## Features
+```sh
+flutter run \
+  --dart-define=SUPABASE_URL=https://PROJECT_REF.supabase.co \
+  --dart-define=SUPABASE_PUBLISHABLE_KEY=sb_publishable_... \
+  --dart-define=MAPTILER_KEY=optional_maptiler_key
+```
 
-### Authentication
+Apply the database schema and RLS policies from:
 
-- Email & password sign up
-- Login
-- Password reset
+```sh
+supabase/migrations/20260610174600_init_wheelride.sql
+```
 
-### Ride Management
+## Project Structure
 
-Create a ride:
-
-- Ride name
-- Optional description
-- Unique QR code generation
-
-Join a ride:
-
-- Scan QR code
-- Instant access to the ride
-
-### Live Location Sharing
-
-Each participant shares:
-
-- Latitude
-- Longitude
-- Speed
-- Heading
-
-Updates are sent every few seconds while a ride is active.
-
-Map view includes:
-
-- All participants
-- Rider names
-- Live positions
-- Your own location highlighted
-
-### Group Chat
-
-- Real-time text chat
-- No message history
-- No attachments
-- No unnecessary complexity
-
-### Participants List
-
-- Rider name
-- Online/offline status
-- Ride leader indicator
-
----
-
-## Architecture
-
-### Mobile
-
-Framework:
-
-- Flutter
-
-Platforms:
-
-- iOS
-- Android
-
-### Backend
-
-Powered by Supabase:
-
-- Authentication
-- PostgreSQL
-- Realtime
-- Storage
-
-### Real-Time Communication
-
-WheelRide uses WebSockets through Supabase Realtime.
-
-Why not P2P?
-
-- More complex networking
-- NAT traversal issues
-- Higher battery consumption
-- Less reliable on mobile networks
-
-A centralized realtime backend provides a much better user experience for this use case
+```txt
+lib/
+├── core/
+│   ├── constants/
+│   ├── routing/
+│   ├── services/
+│   └── theme/
+├── features/
+│   ├── auth/
+│   └── rides/
+└── shared/
+    ├── models/
+    ├── providers/
+    └── widgets/
+```
