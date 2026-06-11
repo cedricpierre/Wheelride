@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../core/constants/app_config.dart';
+import '../../core/services/ride_location_tracker.dart';
 import '../../core/services/wheelride_repository.dart';
 import '../models/wheelride_models.dart';
 
@@ -58,12 +59,13 @@ class WheelRideState {
     List<RideMessage>? messages,
     bool clearError = false,
     bool clearNotice = false,
+    bool clearActiveRide = false,
   }) {
     return WheelRideState(
       isDemo: isDemo,
       isLoading: isLoading ?? this.isLoading,
       user: user ?? this.user,
-      activeRide: activeRide ?? this.activeRide,
+      activeRide: clearActiveRide ? null : (activeRide ?? this.activeRide),
       error: clearError ? null : error ?? this.error,
       notice: clearNotice ? null : notice ?? this.notice,
       locations: locations ?? this.locations,
@@ -83,6 +85,8 @@ class WheelRideController extends Notifier<WheelRideState> {
   StreamSubscription<List<RideParticipant>>? _participantsSub;
   StreamSubscription<RideMessage>? _messagesSub;
   Timer? _locationTimer;
+  final _locationTracker = RideLocationTracker();
+  DateTime? _lastPublishedAt;
   bool _bootstrapped = false;
 
   late WheelRideRepository _repository;
@@ -184,6 +188,17 @@ class WheelRideController extends Notifier<WheelRideState> {
     await _attachRide(ride);
   }
 
+  Future<void> leaveRide() async {
+    _disposeRideSubscriptions();
+    state = state.copyWith(
+      clearActiveRide: true,
+      locations: const [],
+      participants: const [],
+      messages: const [],
+      notice: 'Tu as quitte le ride.',
+    );
+  }
+
   Future<void> sendMessage(String text) async {
     final user = state.user;
     final ride = state.activeRide;
@@ -206,6 +221,8 @@ class WheelRideController extends Notifier<WheelRideState> {
     await _participantsSub?.cancel();
     await _messagesSub?.cancel();
     _locationTimer?.cancel();
+    await _locationTracker.stop();
+    _lastPublishedAt = null;
 
     state = state.copyWith(
       activeRide: ride,
@@ -226,51 +243,58 @@ class WheelRideController extends Notifier<WheelRideState> {
       state = state.copyWith(messages: [...state.messages, message]);
     });
 
-    await _publishLocation();
-    _locationTimer = Timer.periodic(
-      const Duration(seconds: 6),
-      (_) => unawaited(_publishLocation()),
-    );
-  }
-
-  Future<void> _publishLocation() async {
-    final user = state.user;
-    final ride = state.activeRide;
-    if (user == null || ride == null) return;
-
     if (_repository.isDemo) {
-      final now = DateTime.now();
-      final tick = now.second / 10000;
-      await _repository.updateLocation(
-        RideLocation(
-          rideId: ride.id,
-          userId: user.id,
-          latitude: 44.1741 + tick,
-          longitude: 5.2782 + tick,
-          speed: 52,
-          heading: 35,
-          updatedAt: now,
-        ),
+      await _publishDemoLocation();
+      _locationTimer = Timer.periodic(
+        const Duration(seconds: 6),
+        (_) => unawaited(_publishDemoLocation()),
       );
       return;
     }
 
-    try {
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        return;
-      }
+    await _locationTracker.start(
+      onPosition: (position) => unawaited(_publishPosition(position)),
+      onError: (_) {
+        state = state.copyWith(
+          notice: 'Localisation indisponible pour le moment.',
+        );
+      },
+    );
+  }
 
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.best,
-          timeLimit: Duration(seconds: 5),
-        ),
-      );
+  Future<void> _publishDemoLocation() async {
+    final user = state.user;
+    final ride = state.activeRide;
+    if (user == null || ride == null) return;
+
+    final now = DateTime.now();
+    final tick = now.second / 10000;
+    await _repository.updateLocation(
+      RideLocation(
+        rideId: ride.id,
+        userId: user.id,
+        latitude: 44.1741 + tick,
+        longitude: 5.2782 + tick,
+        speed: 52,
+        heading: 35,
+        updatedAt: now,
+      ),
+    );
+  }
+
+  Future<void> _publishPosition(Position position) async {
+    final user = state.user;
+    final ride = state.activeRide;
+    if (user == null || ride == null) return;
+
+    final now = DateTime.now();
+    if (_lastPublishedAt != null &&
+        now.difference(_lastPublishedAt!) < const Duration(seconds: 5)) {
+      return;
+    }
+    _lastPublishedAt = now;
+
+    try {
       await _repository.updateLocation(
         RideLocation(
           rideId: ride.id,
@@ -279,7 +303,7 @@ class WheelRideController extends Notifier<WheelRideState> {
           longitude: position.longitude,
           speed: position.speed,
           heading: position.heading,
-          updatedAt: DateTime.now(),
+          updatedAt: now,
         ),
       );
     } on Object catch (_) {
@@ -318,5 +342,7 @@ class WheelRideController extends Notifier<WheelRideState> {
     unawaited(_participantsSub?.cancel());
     unawaited(_messagesSub?.cancel());
     _locationTimer?.cancel();
+    unawaited(_locationTracker.stop());
+    _lastPublishedAt = null;
   }
 }

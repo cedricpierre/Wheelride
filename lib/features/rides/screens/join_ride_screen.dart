@@ -6,6 +6,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/providers/wheelride_controller.dart';
 import '../../../shared/widgets/action_buttons.dart';
+import '../../../shared/widgets/app_back_button.dart';
 import '../../../shared/widgets/screen_frame.dart';
 
 class JoinRideScreen extends ConsumerStatefulWidget {
@@ -30,7 +31,7 @@ class _JoinRideScreenState extends ConsumerState<JoinRideScreen> {
     final state = ref.watch(wheelRideControllerProvider);
 
     return Scaffold(
-      appBar: AppBar(leading: const BackButton()),
+      appBar: AppBar(leading: const AppBackButton()),
       body: ScreenFrame(
         child: ListView(
           children: [

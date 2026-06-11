@@ -1,9 +1,14 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class AppConfig {
-  static const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  static const supabasePublishableKey = String.fromEnvironment(
-    'SUPABASE_PUBLISHABLE_KEY',
-  );
-  static const mapTilerKey = String.fromEnvironment('MAPTILER_KEY');
+  static String _env(String key) {
+    if (!dotenv.isInitialized) return '';
+    return dotenv.env[key] ?? '';
+  }
+
+  static String get supabaseUrl => _env('SUPABASE_URL');
+  static String get supabasePublishableKey => _env('SUPABASE_PUBLISHABLE_KEY');
+  static String get mapTilerKey => _env('MAPTILER_KEY');
 
   static bool get hasSupabaseConfig =>
       supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty;

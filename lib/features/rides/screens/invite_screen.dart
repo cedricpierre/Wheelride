@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/providers/wheelride_controller.dart';
 import '../../../shared/widgets/action_buttons.dart';
+import '../../../shared/widgets/app_back_button.dart';
 import '../../../shared/widgets/screen_frame.dart';
 
 class InviteScreen extends ConsumerWidget {
@@ -19,7 +20,7 @@ class InviteScreen extends ConsumerWidget {
 
     if (ride == null) {
       return Scaffold(
-        appBar: AppBar(leading: const BackButton()),
+        appBar: AppBar(leading: const AppBackButton()),
         body: const Center(child: Text('Aucun ride actif.')),
       );
     }
@@ -27,7 +28,7 @@ class InviteScreen extends ConsumerWidget {
     final invitePayload = 'wheelride://join/${ride.joinCode}';
 
     return Scaffold(
-      appBar: AppBar(leading: const BackButton()),
+      appBar: AppBar(leading: const AppBackButton()),
       body: ScreenFrame(
         child: ListView(
           children: [
@@ -70,11 +71,13 @@ class InviteScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 14),
-            SelectableText(
-              ride.joinCode,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-                letterSpacing: 5,
+            Center(
+              child: SelectableText(
+                ride.joinCode,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 5,
+                ),
               ),
             ),
             const SizedBox(height: 24),

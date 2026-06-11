@@ -16,27 +16,6 @@ class HomeScreen extends ConsumerWidget {
     final state = ref.watch(wheelRideControllerProvider);
 
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        onTap: (index) {
-          if (index == 1) context.go('/rides/live');
-          if (index == 2) context.go('/rides/participants');
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: 'Accueil',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.groups_2_outlined),
-            label: 'Rides',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profil',
-          ),
-        ],
-      ),
       body: ScreenFrame(
         child: ListView(
           children: [
@@ -64,7 +43,10 @@ class HomeScreen extends ConsumerWidget {
               ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
-            const Text('Mes rides', style: TextStyle(color: AppTheme.muted)),
+            const Text(
+              'Pret a rouler ?',
+              style: TextStyle(color: AppTheme.muted),
+            ),
             const SizedBox(height: 16),
             Card(
               child: Padding(
@@ -73,29 +55,27 @@ class HomeScreen extends ConsumerWidget {
                   children: [
                     const Icon(Icons.groups_2_outlined, size: 42),
                     const SizedBox(height: 18),
-                    Text(
-                      state.activeRide?.name ?? 'Aucun ride actif',
-                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    const Text(
+                      'Cree ou rejoins un ride',
+                      style: TextStyle(fontWeight: FontWeight.w900),
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      state.activeRide == null
-                          ? 'Cree un ride ou rejoins-en un'
-                          : '${state.participants.length} participants connectes',
+                    const Text(
+                      'Lance une balade ou entre un code pour rejoindre tes potes.',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(color: AppTheme.muted),
+                      style: TextStyle(color: AppTheme.muted),
                     ),
                     const SizedBox(height: 22),
                     PrimaryActionButton(
                       label: 'Creer un ride',
                       icon: Icons.add_road_rounded,
-                      onPressed: () => context.go('/rides/create'),
+                      onPressed: () => context.push('/rides/create'),
                     ),
                     const SizedBox(height: 12),
                     SecondaryActionButton(
                       label: 'Rejoindre un ride',
                       icon: Icons.qr_code_scanner_rounded,
-                      onPressed: () => context.go('/rides/join'),
+                      onPressed: () => context.push('/rides/join'),
                     ),
                   ],
                 ),

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/providers/wheelride_controller.dart';
 import '../../../shared/widgets/action_buttons.dart';
+import '../../../shared/widgets/app_back_button.dart';
 import '../../../shared/widgets/screen_frame.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
@@ -38,7 +39,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(leading: const BackButton(), title: const Text('')),
+      appBar: AppBar(
+        leading: const AppBackButton(fallbackLocation: '/login'),
+        title: const Text(''),
+      ),
       body: ScreenFrame(
         child: ListView(
           children: [

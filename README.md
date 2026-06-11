@@ -15,14 +15,14 @@ WheelRide is a lightweight Flutter app for motorcycle group rides: create a ride
 
 ## Configuration
 
-The app runs in local demo mode when Supabase credentials are not provided. To connect a backend:
+The app runs in local demo mode when Supabase credentials are not provided. To connect a backend, copy the example env file and fill in your values:
 
 ```sh
-flutter run \
-  --dart-define=SUPABASE_URL=https://PROJECT_REF.supabase.co \
-  --dart-define=SUPABASE_PUBLISHABLE_KEY=sb_publishable_... \
-  --dart-define=MAPTILER_KEY=optional_maptiler_key
+cp .env.example .env
+flutter run
 ```
+
+Optional: set `MAPTILER_KEY` in `.env` for MapTiler tiles instead of OpenStreetMap.
 
 Apply the database schema and RLS policies from:
 

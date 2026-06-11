@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../shared/providers/wheelride_controller.dart';
 import '../../../shared/widgets/action_buttons.dart';
+import '../../../shared/widgets/app_back_button.dart';
 import '../../../shared/widgets/screen_frame.dart';
 
 class CreateRideScreen extends ConsumerStatefulWidget {
@@ -30,7 +31,7 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: const BackButton(),
+        leading: const AppBackButton(),
         title: const Text('Creer un ride'),
       ),
       body: ScreenFrame(
@@ -64,7 +65,7 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
                           .read(wheelRideControllerProvider.notifier)
                           .createRide(_name.text, _description.text);
                       if (ride != null && context.mounted) {
-                        context.go('/rides/invite');
+                        context.push('/rides/invite');
                       }
                     },
             ),

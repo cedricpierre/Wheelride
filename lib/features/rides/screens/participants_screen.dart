@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/providers/wheelride_controller.dart';
+import '../../../shared/widgets/app_back_button.dart';
 import '../../../shared/widgets/screen_frame.dart';
 
 class ParticipantsScreen extends ConsumerWidget {
@@ -14,7 +15,7 @@ class ParticipantsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: const BackButton(),
+        leading: const AppBackButton(fallbackLocation: '/rides/live'),
         title: const Text('Participants'),
         actions: [
           Padding(
