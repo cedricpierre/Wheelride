@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 class AppBackButton extends StatelessWidget {
@@ -16,7 +16,9 @@ class AppBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BackButton(onPressed: () => _onPressed(context));
+    return CupertinoNavigationBarBackButton(
+      onPressed: () => _onPressed(context),
+    );
   }
 }
 
@@ -27,7 +29,9 @@ class AppBackIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      minimumSize: Size.zero,
       onPressed: () {
         if (context.canPop()) {
           context.pop();
@@ -35,7 +39,7 @@ class AppBackIconButton extends StatelessWidget {
           context.go(fallbackLocation);
         }
       },
-      icon: const Icon(Icons.arrow_back_rounded),
+      child: const Icon(CupertinoIcons.back, size: 28),
     );
   }
 }

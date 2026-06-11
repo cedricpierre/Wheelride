@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +11,9 @@ import '../../../core/theme/app_theme.dart';
 import '../../../shared/models/wheelride_models.dart';
 import '../../../shared/providers/wheelride_controller.dart';
 import '../../../shared/widgets/action_buttons.dart';
+import '../../../shared/widgets/adaptive_sheets.dart';
 import '../../../shared/widgets/app_back_button.dart';
+import '../../../shared/widgets/glass_panel.dart';
 
 class LiveRideScreen extends ConsumerStatefulWidget {
   const LiveRideScreen({super.key});
@@ -24,7 +27,6 @@ class _LiveRideScreenState extends ConsumerState<LiveRideScreen> {
   bool _chatVisible = false;
 
   static const _controlSize = 56.0;
-  static const _controlSpacing = 10.0;
   static const _edgeInset = 14.0;
 
   @override
@@ -136,74 +138,38 @@ class _LiveRideScreenState extends ConsumerState<LiveRideScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               child: Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppTheme.ink,
-                      borderRadius: BorderRadius.circular(99),
-                    ),
-                    child: Text(
-                      ride.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 13,
+                  Flexible(
+                    child: GlassPanel(
+                      borderRadius: 22,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
                       ),
-                      overflow: TextOverflow.ellipsis,
+                      child: Text(
+                        ride.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
-                  const Spacer(),
-                  CircleAvatar(
-                    backgroundColor: AppTheme.ink,
-                    child: PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert_rounded),
-                      color: AppTheme.panel,
-                      onSelected: (value) async {
-                        switch (value) {
-                          case 'participants':
-                            context.push('/rides/participants');
-                          case 'leave':
-                            final confirmed = await _confirmLeave(context);
-                            if (!confirmed || !context.mounted) return;
-                            await ref
-                                .read(wheelRideControllerProvider.notifier)
-                                .leaveRide();
-                            if (context.mounted) context.go('/home');
-                          case 'qr':
-                            context.push('/rides/qr');
-                        }
-                      },
-                      itemBuilder: (context) => const [
-                        PopupMenuItem(
-                          value: 'participants',
-                          child: ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: Icon(Icons.groups_2_outlined),
-                            title: Text('Liste des participants'),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'leave',
-                          child: ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: Icon(Icons.logout_rounded),
-                            title: Text('Quitter'),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'qr',
-                          child: ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: Icon(Icons.qr_code_2_rounded),
-                            title: Text('Voir QR code'),
-                          ),
-                        ),
-                      ],
+                  const SizedBox(width: 10),
+                  GlassPanel(
+                    borderRadius: 22,
+                    child: CupertinoButton(
+                      padding: const EdgeInsets.all(10),
+                      minimumSize: Size.zero,
+                      onPressed: () => _showRideMenu(context, ref),
+                      child: const Icon(
+                        CupertinoIcons.ellipsis,
+                        size: 22,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
@@ -216,35 +182,42 @@ class _LiveRideScreenState extends ConsumerState<LiveRideScreen> {
               bottom: _edgeInset + bottomInset,
               child: _ChatToggleButton(onPressed: _openChat),
             ),
-          Positioned(
-            right: _edgeInset,
-            bottom: _edgeInset + bottomInset,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _MapControlButton(
-                  size: _controlSize,
-                  icon: Icons.add_rounded,
-                  tooltip: 'Zoomer',
-                  onPressed: _zoomIn,
+          if (!_chatVisible)
+            Positioned(
+              right: _edgeInset,
+              bottom: _edgeInset + bottomInset,
+              child: GlassPanel(
+                borderRadius: 14,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _MapControlButton(
+                      size: _controlSize,
+                      icon: CupertinoIcons.plus,
+                      onPressed: _zoomIn,
+                    ),
+                    Divider(
+                      height: 0.5,
+                      color: Colors.white.withValues(alpha: 0.12),
+                    ),
+                    _MapControlButton(
+                      size: _controlSize,
+                      icon: CupertinoIcons.minus,
+                      onPressed: _zoomOut,
+                    ),
+                    Divider(
+                      height: 0.5,
+                      color: Colors.white.withValues(alpha: 0.12),
+                    ),
+                    _MapControlButton(
+                      size: _controlSize,
+                      icon: CupertinoIcons.location_fill,
+                      onPressed: _recenterOnMe,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: _controlSpacing),
-                _MapControlButton(
-                  size: _controlSize,
-                  icon: Icons.remove_rounded,
-                  tooltip: 'Dezoomer',
-                  onPressed: _zoomOut,
-                ),
-                const SizedBox(height: _controlSpacing),
-                _MapControlButton(
-                  size: _controlSize,
-                  icon: Icons.my_location_rounded,
-                  tooltip: 'Me recentrer',
-                  onPressed: _recenterOnMe,
-                ),
-              ],
+              ),
             ),
-          ),
           if (_chatVisible)
             DraggableScrollableSheet(
               initialChildSize: 0.34,
@@ -253,34 +226,38 @@ class _LiveRideScreenState extends ConsumerState<LiveRideScreen> {
               snap: true,
               snapSizes: const [0.34, 0.55, 0.85],
               builder: (context, scrollController) {
-                return DecoratedBox(
-                  decoration: const BoxDecoration(
-                    color: AppTheme.panel,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black54,
-                        blurRadius: 16,
-                        offset: Offset(0, -4),
-                      ),
-                    ],
+                return ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
                   ),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 8),
-                      Container(
-                        width: 56,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: Colors.white38,
-                          borderRadius: BorderRadius.circular(99),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppTheme.sheet.withValues(alpha: 0.96),
+                      border: Border(
+                        top: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.1),
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      Expanded(
-                        child: _ChatPanel(scrollController: scrollController),
-                      ),
-                    ],
+                    ),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 8),
+                        Container(
+                          width: 36,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.28),
+                            borderRadius: BorderRadius.circular(99),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Expanded(
+                          child: _ChatPanel(
+                            scrollController: scrollController,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -300,27 +277,36 @@ class _LiveRideScreenState extends ConsumerState<LiveRideScreen> {
     return null;
   }
 
-  Future<bool> _confirmLeave(BuildContext context) async {
-    return await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Quitter le ride ?'),
-            content: const Text(
-              'Tu ne verras plus la carte ni le chat de ce ride.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Annuler'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Quitter'),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+  Future<void> _showRideMenu(BuildContext context, WidgetRef ref) async {
+    await showAppActionSheet(
+      context,
+      actions: [
+        AppSheetAction(
+          label: 'Liste des participants',
+          onPressed: () => context.push('/rides/participants'),
+        ),
+        AppSheetAction(
+          label: 'Voir QR code',
+          onPressed: () => context.push('/rides/qr'),
+        ),
+        AppSheetAction(
+          label: 'Quitter le ride',
+          destructive: true,
+          onPressed: () async {
+            final confirmed = await showAppConfirmDialog(
+              context,
+              title: 'Quitter le ride ?',
+              message: 'Tu ne verras plus la carte ni le chat de ce ride.',
+              confirmLabel: 'Quitter',
+              destructive: true,
+            );
+            if (!confirmed || !context.mounted) return;
+            await ref.read(wheelRideControllerProvider.notifier).leaveRide();
+            if (context.mounted) context.go('/home');
+          },
+        ),
+      ],
+    );
   }
 }
 
@@ -328,33 +314,23 @@ class _MapControlButton extends StatelessWidget {
   const _MapControlButton({
     required this.size,
     required this.icon,
-    required this.tooltip,
     required this.onPressed,
   });
 
   final double size;
   final IconData icon;
-  final String tooltip;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppTheme.ink,
-      elevation: 6,
-      shadowColor: Colors.black54,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(16),
-        child: Tooltip(
-          message: tooltip,
-          child: SizedBox(
-            width: size,
-            height: size,
-            child: Icon(icon, color: Colors.white, size: 28),
-          ),
-        ),
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      minimumSize: Size.zero,
+      onPressed: onPressed,
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Icon(icon, color: Colors.white, size: 22),
       ),
     );
   }
@@ -367,34 +343,33 @@ class _ChatToggleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppTheme.neon,
-      elevation: 6,
-      shadowColor: Colors.black54,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(20),
-        child: SizedBox(
-          height: 56,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.chat_bubble_rounded, size: 28, color: Colors.black87),
-                const SizedBox(width: 8),
-                Text(
-                  'Chat',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      minimumSize: Size.zero,
+      onPressed: onPressed,
+      child: GlassPanel(
+        borderRadius: 28,
+        tint: AppTheme.neon,
+        opacity: 0.92,
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              CupertinoIcons.chat_bubble_text_fill,
+              size: 22,
+              color: Colors.black87,
             ),
-          ),
+            SizedBox(width: 8),
+            Text(
+              'Chat',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -428,9 +403,10 @@ class _RiderMarker extends StatelessWidget {
           padding: const EdgeInsets.all(7),
           child: Icon(
             isCurrentUser
-                ? Icons.navigation_rounded
-                : Icons.sports_motorsports_rounded,
+                ? CupertinoIcons.location_north_fill
+                : CupertinoIcons.circle_fill,
             color: color,
+            size: isCurrentUser ? 18 : 10,
           ),
         ),
         const SizedBox(height: 4),
@@ -503,8 +479,13 @@ class _ChatPanelState extends ConsumerState<_ChatPanel> {
                         padding: const EdgeInsets.all(12),
                         constraints: const BoxConstraints(maxWidth: 280),
                         decoration: BoxDecoration(
-                          color: isMe ? AppTheme.neon : const Color(0xFF202633),
-                          borderRadius: BorderRadius.circular(16),
+                          color: isMe ? AppTheme.neon : const Color(0xFF2A3140),
+                          borderRadius: BorderRadius.only(
+                            topLeft: const Radius.circular(18),
+                            topRight: const Radius.circular(18),
+                            bottomLeft: Radius.circular(isMe ? 18 : 4),
+                            bottomRight: Radius.circular(isMe ? 4 : 18),
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -540,33 +521,51 @@ class _ChatPanelState extends ConsumerState<_ChatPanel> {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
-                child: TextField(
-                  key: const Key('chat-message'),
-                  controller: _message,
-                  style: const TextStyle(fontSize: 16),
-                  decoration: const InputDecoration(
-                    hintText: 'Ecrire un message...',
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
+                child: GlassPanel(
+                  borderRadius: 22,
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: CupertinoTextField(
+                    key: const Key('chat-message'),
+                    controller: _message,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    placeholder: 'Message',
+                    placeholderStyle: TextStyle(
+                      color: AppTheme.muted.withValues(alpha: 0.9),
+                      fontSize: 16,
                     ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    decoration: null,
                   ),
                 ),
               ),
               const SizedBox(width: 10),
-              SizedBox(
-                width: 52,
-                height: 52,
-                child: FloatingActionButton(
-                  onPressed: () async {
-                    await ref
-                        .read(wheelRideControllerProvider.notifier)
-                        .sendMessage(_message.text);
-                    _message.clear();
-                  },
-                  child: const Icon(Icons.send_rounded, size: 26),
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                onPressed: () async {
+                  await ref
+                      .read(wheelRideControllerProvider.notifier)
+                      .sendMessage(_message.text);
+                  _message.clear();
+                },
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: const BoxDecoration(
+                    color: AppTheme.neon,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    CupertinoIcons.arrow_up,
+                    color: Colors.black87,
+                    size: 22,
+                  ),
                 ),
               ),
             ],

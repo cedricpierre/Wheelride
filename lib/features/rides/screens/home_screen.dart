@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -31,7 +32,7 @@ class HomeScreen extends ConsumerWidget {
                         .signOut();
                     if (context.mounted) context.go('/login');
                   },
-                  icon: const Icon(Icons.logout_rounded),
+                  icon: const Icon(CupertinoIcons.square_arrow_right),
                 ),
               ],
             ),
@@ -53,7 +54,7 @@ class HomeScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    const Icon(Icons.groups_2_outlined, size: 42),
+                    const Icon(CupertinoIcons.person_2_fill, size: 42),
                     const SizedBox(height: 18),
                     const Text(
                       'Cree ou rejoins un ride',
@@ -68,13 +69,13 @@ class HomeScreen extends ConsumerWidget {
                     const SizedBox(height: 22),
                     PrimaryActionButton(
                       label: 'Creer un ride',
-                      icon: Icons.add_road_rounded,
+                      icon: CupertinoIcons.add_circled,
                       onPressed: () => context.push('/rides/create'),
                     ),
                     const SizedBox(height: 12),
                     SecondaryActionButton(
                       label: 'Rejoindre un ride',
-                      icon: Icons.qr_code_scanner_rounded,
+                      icon: CupertinoIcons.qrcode_viewfinder,
                       onPressed: () => context.push('/rides/join'),
                     ),
                   ],
