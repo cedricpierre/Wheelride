@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,12 +6,14 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../core/constants/app_config.dart';
+import '../../../core/theme/app_icons.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/models/wheelride_models.dart';
 import '../../../shared/providers/wheelride_controller.dart';
 import '../../../shared/widgets/action_buttons.dart';
 import '../../../shared/widgets/adaptive_sheets.dart';
 import '../../../shared/widgets/app_back_button.dart';
+import '../../../shared/widgets/app_tap.dart';
 import '../../../shared/widgets/glass_panel.dart';
 
 class LiveRideScreen extends ConsumerStatefulWidget {
@@ -80,7 +81,7 @@ class _LiveRideScreenState extends ConsumerState<LiveRideScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.route_outlined, size: 56),
+              const Icon(AppIcons.route, size: 56),
               const SizedBox(height: 16),
               const Text('Aucun ride actif.'),
               const SizedBox(height: 16),
@@ -161,15 +162,9 @@ class _LiveRideScreenState extends ConsumerState<LiveRideScreen> {
                   const SizedBox(width: 10),
                   GlassPanel(
                     borderRadius: 22,
-                    child: CupertinoButton(
-                      padding: const EdgeInsets.all(10),
-                      minimumSize: Size.zero,
+                    child: _OverlayIconButton(
+                      icon: AppIcons.moreMenu,
                       onPressed: () => _showRideMenu(context, ref),
-                      child: const Icon(
-                        CupertinoIcons.ellipsis,
-                        size: 22,
-                        color: Colors.white,
-                      ),
                     ),
                   ),
                 ],
@@ -193,7 +188,7 @@ class _LiveRideScreenState extends ConsumerState<LiveRideScreen> {
                   children: [
                     _MapControlButton(
                       size: _controlSize,
-                      icon: CupertinoIcons.plus,
+                      icon: AppIcons.zoomIn,
                       onPressed: _zoomIn,
                     ),
                     Divider(
@@ -202,7 +197,7 @@ class _LiveRideScreenState extends ConsumerState<LiveRideScreen> {
                     ),
                     _MapControlButton(
                       size: _controlSize,
-                      icon: CupertinoIcons.minus,
+                      icon: AppIcons.zoomOut,
                       onPressed: _zoomOut,
                     ),
                     Divider(
@@ -211,7 +206,7 @@ class _LiveRideScreenState extends ConsumerState<LiveRideScreen> {
                     ),
                     _MapControlButton(
                       size: _controlSize,
-                      icon: CupertinoIcons.location_fill,
+                      icon: AppIcons.myLocation,
                       onPressed: _recenterOnMe,
                     ),
                   ],
@@ -310,6 +305,25 @@ class _LiveRideScreenState extends ConsumerState<LiveRideScreen> {
   }
 }
 
+class _OverlayIconButton extends StatelessWidget {
+  const _OverlayIconButton({
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppTap(
+      onTap: onPressed,
+      padding: const EdgeInsets.all(10),
+      child: Icon(icon, size: 22, color: Colors.white),
+    );
+  }
+}
+
 class _MapControlButton extends StatelessWidget {
   const _MapControlButton({
     required this.size,
@@ -323,10 +337,8 @@ class _MapControlButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoButton(
-      padding: EdgeInsets.zero,
-      minimumSize: Size.zero,
-      onPressed: onPressed,
+    return AppTap(
+      onTap: onPressed,
       child: SizedBox(
         width: size,
         height: size,
@@ -343,28 +355,22 @@ class _ChatToggleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoButton(
-      padding: EdgeInsets.zero,
-      minimumSize: Size.zero,
-      onPressed: onPressed,
+    return AppTap(
+      onTap: onPressed,
       child: GlassPanel(
         borderRadius: 28,
         tint: AppTheme.neon,
-        opacity: 0.92,
+        opacity: 0.94,
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              CupertinoIcons.chat_bubble_text_fill,
-              size: 22,
-              color: Colors.black87,
-            ),
+            Icon(AppIcons.chat, size: 22, color: Colors.black87),
             SizedBox(width: 8),
             Text(
               'Chat',
               style: TextStyle(
-                fontSize: 17,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
@@ -402,9 +408,7 @@ class _RiderMarker extends StatelessWidget {
           ),
           padding: const EdgeInsets.all(7),
           child: Icon(
-            isCurrentUser
-                ? CupertinoIcons.location_north_fill
-                : CupertinoIcons.circle_fill,
+            isCurrentUser ? AppIcons.riderSelf : AppIcons.riderOther,
             color: color,
             size: isCurrentUser ? 18 : 10,
           ),
@@ -526,29 +530,26 @@ class _ChatPanelState extends ConsumerState<_ChatPanel> {
               Expanded(
                 child: GlassPanel(
                   borderRadius: 22,
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: CupertinoTextField(
+                  child: TextField(
                     key: const Key('chat-message'),
                     controller: _message,
                     style: const TextStyle(color: Colors.white, fontSize: 16),
-                    placeholder: 'Message',
-                    placeholderStyle: TextStyle(
-                      color: AppTheme.muted.withValues(alpha: 0.9),
-                      fontSize: 16,
+                    decoration: const InputDecoration(
+                      hintText: 'Message',
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
-                    ),
-                    decoration: null,
                   ),
                 ),
               ),
               const SizedBox(width: 10),
-              CupertinoButton(
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                onPressed: () async {
+              AppTap(
+                onTap: () async {
                   await ref
                       .read(wheelRideControllerProvider.notifier)
                       .sendMessage(_message.text);
@@ -562,7 +563,7 @@ class _ChatPanelState extends ConsumerState<_ChatPanel> {
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    CupertinoIcons.arrow_up,
+                    AppIcons.send,
                     color: Colors.black87,
                     size: 22,
                   ),

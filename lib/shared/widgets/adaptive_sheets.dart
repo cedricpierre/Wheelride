@@ -1,4 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import '../../core/theme/app_theme.dart';
+import 'action_buttons.dart';
 
 Future<bool> showAppConfirmDialog(
   BuildContext context, {
@@ -8,26 +11,42 @@ Future<bool> showAppConfirmDialog(
   String confirmLabel = 'Confirmer',
   bool destructive = false,
 }) async {
-  final result = await showCupertinoDialog<bool>(
+  final result = await showDialog<bool>(
     context: context,
-    builder: (context) => CupertinoAlertDialog(
-      title: Text(title),
-      content: Padding(
-        padding: const EdgeInsets.only(top: 8),
-        child: Text(message),
+    builder: (context) => Dialog(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppTheme.muted, height: 1.4),
+            ),
+            const SizedBox(height: 24),
+            PrimaryActionButton(
+              label: confirmLabel,
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+            const SizedBox(height: 10),
+            SecondaryActionButton(
+              label: cancelLabel,
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+          ],
+        ),
       ),
-      actions: [
-        CupertinoDialogAction(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text(cancelLabel),
-        ),
-        CupertinoDialogAction(
-          isDestructiveAction: destructive,
-          isDefaultAction: !destructive,
-          onPressed: () => Navigator.of(context).pop(true),
-          child: Text(confirmLabel),
-        ),
-      ],
     ),
   );
   return result ?? false;
@@ -38,26 +57,51 @@ Future<void> showAppActionSheet(
   required List<AppSheetAction> actions,
   String cancelLabel = 'Annuler',
 }) async {
-  await showCupertinoModalPopup<void>(
+  await showModalBottomSheet<void>(
     context: context,
-    builder: (context) => CupertinoActionSheet(
-      actions: [
-        for (final action in actions)
-          CupertinoActionSheetAction(
-            isDestructiveAction: action.destructive,
-            onPressed: () {
-              Navigator.of(context).pop();
-              action.onPressed();
-            },
-            child: Text(action.label),
-          ),
-      ],
-      cancelButton: CupertinoActionSheetAction(
-        isDefaultAction: true,
-        onPressed: () => Navigator.of(context).pop(),
-        child: Text(cancelLabel),
-      ),
+    backgroundColor: AppTheme.sheet,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.radiusLg)),
     ),
+    builder: (context) {
+      return SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 10),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.24),
+                borderRadius: BorderRadius.circular(99),
+              ),
+            ),
+            const SizedBox(height: 8),
+            for (var i = 0; i < actions.length; i++) ...[
+              if (i > 0)
+                Divider(
+                  height: 1,
+                  color: Colors.white.withValues(alpha: 0.08),
+                ),
+              _SheetRow(action: actions[i]),
+            ],
+            Divider(
+              height: 8,
+              thickness: 8,
+              color: AppTheme.ink,
+            ),
+            _SheetRow(
+              action: AppSheetAction(
+                label: cancelLabel,
+                onPressed: () {},
+              ),
+              muted: true,
+            ),
+          ],
+        ),
+      );
+    },
   );
 }
 
@@ -71,4 +115,42 @@ class AppSheetAction {
   final String label;
   final VoidCallback onPressed;
   final bool destructive;
+}
+
+class _SheetRow extends StatelessWidget {
+  const _SheetRow({required this.action, this.muted = false});
+
+  final AppSheetAction action;
+  final bool muted;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = action.destructive
+        ? Colors.redAccent
+        : muted
+        ? AppTheme.muted
+        : Colors.white;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).pop();
+          if (!muted) action.onPressed();
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+          child: Text(
+            action.label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: color,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {
@@ -7,37 +6,22 @@ class AppTheme {
   static const panel = Color(0xFF151A22);
   static const muted = Color(0xFF8A94A6);
   static const sheet = Color(0xFF1C2129);
+  static const radius = 14.0;
+  static const radiusLg = 20.0;
 
   static ThemeData dark() {
-    const platform = TargetPlatform.iOS;
-    final base = ThemeData(
-      brightness: Brightness.dark,
-      platform: platform,
-      useMaterial3: true,
-    );
+    final base = ThemeData.dark(useMaterial3: true);
 
     return base.copyWith(
       scaffoldBackgroundColor: ink,
       splashFactory: NoSplash.splashFactory,
       highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
       colorScheme: ColorScheme.fromSeed(
         seedColor: neon,
         brightness: Brightness.dark,
         primary: neon,
         surface: panel,
-      ),
-      cupertinoOverrideTheme: const CupertinoThemeData(
-        primaryColor: neon,
-        barBackgroundColor: panel,
-        scaffoldBackgroundColor: ink,
-        brightness: Brightness.dark,
-      ),
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-        },
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: ink,
@@ -55,8 +39,8 @@ class AppTheme {
         color: panel,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+          borderRadius: BorderRadius.circular(radiusLg),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
         ),
       ),
       dividerTheme: DividerThemeData(
@@ -71,15 +55,15 @@ class AppTheme {
           vertical: 14,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(radius),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(radius),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(radius),
           borderSide: const BorderSide(color: neon, width: 1.5),
         ),
       ),
@@ -91,11 +75,11 @@ class AppTheme {
           shadowColor: Colors.transparent,
           minimumSize: const Size.fromHeight(52),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(radius),
           ),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: 17,
+            fontSize: 16,
           ),
         ),
       ),
@@ -106,12 +90,20 @@ class AppTheme {
           minimumSize: const Size.fromHeight(52),
           side: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(radius),
           ),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: 17,
+            fontSize: 16,
           ),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: panel,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusLg),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
         ),
       ),
       textTheme: base.textTheme.apply(

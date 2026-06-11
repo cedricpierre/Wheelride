@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
@@ -17,39 +16,12 @@ class PrimaryActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final child = icon == null
-        ? Text(label)
-        : Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 20),
-              const SizedBox(width: 8),
-              Text(label),
-            ],
-          );
-
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: CupertinoButton.filled(
-        padding: EdgeInsets.zero,
-        borderRadius: BorderRadius.circular(14),
-        color: AppTheme.neon,
-        disabledColor: AppTheme.neon.withValues(alpha: 0.4),
-        onPressed: onPressed,
-        child: DefaultTextStyle(
-          style: const TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w600,
-            fontSize: 17,
-          ),
-          child: IconTheme(
-            data: const IconThemeData(color: Colors.black87, size: 20),
-            child: child,
-          ),
-        ),
-      ),
+    return _NeutralButton(
+      label: label,
+      icon: icon,
+      onPressed: onPressed,
+      backgroundColor: AppTheme.neon,
+      foregroundColor: Colors.black87,
     );
   }
 }
@@ -68,6 +40,36 @@ class SecondaryActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _NeutralButton(
+      label: label,
+      icon: icon,
+      onPressed: onPressed,
+      backgroundColor: const Color(0xFF1C2129),
+      foregroundColor: Colors.white,
+      borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+    );
+  }
+}
+
+class _NeutralButton extends StatelessWidget {
+  const _NeutralButton({
+    required this.label,
+    required this.onPressed,
+    required this.backgroundColor,
+    required this.foregroundColor,
+    this.icon,
+    this.borderSide = BorderSide.none,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+  final Color backgroundColor;
+  final Color foregroundColor;
+  final BorderSide borderSide;
+
+  @override
+  Widget build(BuildContext context) {
     final child = icon == null
         ? Text(label)
         : Row(
@@ -83,21 +85,27 @@ class SecondaryActionButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: 52,
-      child: CupertinoButton(
-        padding: EdgeInsets.zero,
-        borderRadius: BorderRadius.circular(14),
-        color: const Color(0xFF1C2129),
-        disabledColor: const Color(0xFF1C2129).withValues(alpha: 0.5),
-        onPressed: onPressed,
-        child: DefaultTextStyle(
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 17,
-          ),
-          child: IconTheme(
-            data: const IconThemeData(color: Colors.white, size: 20),
-            child: child,
+      child: Material(
+        color: onPressed == null
+            ? backgroundColor.withValues(alpha: 0.45)
+            : backgroundColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radius),
+          side: borderSide,
+        ),
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(AppTheme.radius),
+          child: DefaultTextStyle(
+            style: TextStyle(
+              color: foregroundColor,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+            child: IconTheme(
+              data: IconThemeData(color: foregroundColor, size: 20),
+              child: Center(child: child),
+            ),
           ),
         ),
       ),
