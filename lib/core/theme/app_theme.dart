@@ -6,6 +6,7 @@ class AppTheme {
   static const panel = Color(0xFF151A22);
   static const muted = Color(0xFF8A94A6);
   static const sheet = Color(0xFF1C2129);
+  static const bubbleOther = Color(0xFF2A3140);
   static const radius = 14.0;
   static const radiusLg = 20.0;
 

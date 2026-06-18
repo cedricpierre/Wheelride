@@ -24,23 +24,3 @@ class AppBackButton extends StatelessWidget {
     );
   }
 }
-
-class AppBackIconButton extends StatelessWidget {
-  const AppBackIconButton({super.key, this.fallbackLocation = '/home'});
-
-  final String fallbackLocation;
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        if (context.canPop()) {
-          context.pop();
-        } else {
-          context.go(fallbackLocation);
-        }
-      },
-      icon: const Icon(AppIcons.back),
-    );
-  }
-}

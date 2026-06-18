@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
-/// Panneau sombre avec bordure fine — style WheelRide neutre.
-class GlassPanel extends StatelessWidget {
-  const GlassPanel({
+/// Panneau sombre avec bordure fine — style WheelRide.
+class SurfacePanel extends StatelessWidget {
+  const SurfacePanel({
     required this.child,
     super.key,
     this.borderRadius = AppTheme.radius,

@@ -6,6 +6,7 @@ import '../../../shared/providers/wheelride_controller.dart';
 import '../../../shared/widgets/action_buttons.dart';
 import '../../../shared/widgets/app_back_button.dart';
 import '../../../shared/widgets/screen_frame.dart';
+import '../../../shared/widgets/status_message.dart';
 
 class CreateRideScreen extends ConsumerStatefulWidget {
   const CreateRideScreen({super.key});
@@ -69,14 +70,7 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
                       }
                     },
             ),
-            if (state.error != null) ...[
-              const SizedBox(height: 16),
-              Text(
-                state.error!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.redAccent),
-              ),
-            ],
+            StatusMessage(error: state.error),
           ],
         ),
       ),

@@ -16,4 +16,6 @@ abstract final class AppIcons {
   static const riderSelf = Icons.navigation_rounded;
   static const riderOther = Icons.circle;
   static const route = Icons.route_outlined;
+  static const share = Icons.ios_share_rounded;
+  static const startRide = Icons.navigation_rounded;
 }

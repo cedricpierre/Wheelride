@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 import 'action_buttons.dart';
+import 'sheet_handle.dart';
 
 Future<bool> showAppConfirmDialog(
   BuildContext context, {
@@ -38,6 +39,8 @@ Future<bool> showAppConfirmDialog(
             PrimaryActionButton(
               label: confirmLabel,
               onPressed: () => Navigator.of(context).pop(true),
+              backgroundColor: destructive ? Colors.redAccent : null,
+              foregroundColor: destructive ? Colors.white : null,
             ),
             const SizedBox(height: 10),
             SecondaryActionButton(
@@ -68,16 +71,7 @@ Future<void> showAppActionSheet(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 10),
-            Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.24),
-                borderRadius: BorderRadius.circular(99),
-              ),
-            ),
-            const SizedBox(height: 8),
+            const SheetHandle(),
             for (var i = 0; i < actions.length; i++) ...[
               if (i > 0)
                 Divider(
@@ -86,16 +80,9 @@ Future<void> showAppActionSheet(
                 ),
               _SheetRow(action: actions[i]),
             ],
-            Divider(
-              height: 8,
-              thickness: 8,
-              color: AppTheme.ink,
-            ),
+            Divider(height: 8, thickness: 8, color: AppTheme.ink),
             _SheetRow(
-              action: AppSheetAction(
-                label: cancelLabel,
-                onPressed: () {},
-              ),
+              action: AppSheetAction(label: cancelLabel, onPressed: () {}),
               muted: true,
             ),
           ],

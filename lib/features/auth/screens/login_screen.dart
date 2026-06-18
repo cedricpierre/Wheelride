@@ -6,6 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../shared/providers/wheelride_controller.dart';
 import '../../../shared/widgets/action_buttons.dart';
 import '../../../shared/widgets/screen_frame.dart';
+import '../../../shared/widgets/status_message.dart';
 import '../../../shared/widgets/wheelride_logo.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -95,32 +96,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   .resetPassword(_email.text),
               child: const Text('Mot de passe oublie ?'),
             ),
-            _StatusMessage(error: state.error, notice: state.notice),
+            StatusMessage(error: state.error, notice: state.notice),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StatusMessage extends StatelessWidget {
-  const _StatusMessage({this.error, this.notice});
-
-  final String? error;
-  final String? notice;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = error ?? notice;
-    if (text == null) return const SizedBox.shrink();
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: error == null ? AppTheme.neon : Colors.redAccent,
         ),
       ),
     );

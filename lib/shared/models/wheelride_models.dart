@@ -155,3 +155,12 @@ class RideMessage {
     );
   }
 }
+
+extension RideParticipantListX on List<RideParticipant> {
+  RideParticipant? byUserId(String userId) {
+    for (final participant in this) {
+      if (participant.userId == userId) return participant;
+    }
+    return null;
+  }
+}

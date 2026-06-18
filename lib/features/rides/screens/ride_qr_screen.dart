@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/providers/wheelride_controller.dart';
 import '../../../shared/widgets/app_back_button.dart';
+import '../../../shared/widgets/ride_qr_card.dart';
 
 class RideQrScreen extends ConsumerWidget {
   const RideQrScreen({super.key});
@@ -48,31 +48,10 @@ class RideQrScreen extends ConsumerWidget {
                 style: TextStyle(color: AppTheme.muted),
               ),
               const SizedBox(height: 28),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(22),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.neon.withValues(alpha: .2),
-                      blurRadius: 24,
-                    ),
-                  ],
-                ),
-                child: SizedBox.square(
-                  dimension: 220,
-                  child: QrImageView(data: invitePayload),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SelectableText(
-                ride.joinCode,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 4,
-                ),
+              RideQrCard(
+                payload: invitePayload,
+                joinCode: ride.joinCode,
+                qrSize: 220,
               ),
             ],
           ),

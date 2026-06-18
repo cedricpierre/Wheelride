@@ -8,11 +8,15 @@ class PrimaryActionButton extends StatelessWidget {
     required this.onPressed,
     super.key,
     this.icon,
+    this.backgroundColor,
+    this.foregroundColor,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final IconData? icon;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +24,8 @@ class PrimaryActionButton extends StatelessWidget {
       label: label,
       icon: icon,
       onPressed: onPressed,
-      backgroundColor: AppTheme.neon,
-      foregroundColor: Colors.black87,
+      backgroundColor: backgroundColor ?? AppTheme.neon,
+      foregroundColor: foregroundColor ?? Colors.black87,
     );
   }
 }
